@@ -1,0 +1,38 @@
+# Core dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# SAM and computer vision
+segment-anything
+transformers>=4.30.0
+opencv-python>=4.8.0
+Pillow>=9.5.0
+
+# Domain adaptation and ML utilities
+scikit-learn>=1.3.0
+scipy>=1.11.0
+numpy>=1.24.0
+
+# Data handling and visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+pandas>=2.0.0
+tqdm>=4.65.0
+
+# Post-processing
+pydensecrf>=1.0.0  # For CRF refinement
+scikit-image>=0.21.0
+
+# Jupyter and development
+jupyter>=1.0.0
+ipykernel>=6.25.0
+notebook>=6.5.0
+
+# Optional: Additional domain adaptation libraries
+# torch-domain (if available)
+# torchmetrics for evaluation metrics
+torchmetrics>=1.0.0
+
+# GPU monitoring and utilities
+gpustat>=1.1.0
