@@ -141,6 +141,10 @@ class DatasetConfig:
         """
         Validate that all configured paths exist.
         
+        Note: Legacy datasets (legacy.source, legacy.target) are placeholders 
+        and are expected to have missing image files. Only main_dataset and 
+        testing datasets contain actual forestry data.
+        
         Returns:
             Dictionary with validation results
         """

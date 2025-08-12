@@ -94,7 +94,13 @@ class EnvironmentSetup:
         
         try:
             logger.info(f"PyTorch version: {torch.__version__}")
-            logger.info(f"Torchvision version: {torch.ops.torchvision.__version__ if hasattr(torch.ops, 'torchvision') else 'Not available'}")
+            
+            # Check torchvision version properly
+            try:
+                import torchvision
+                logger.info(f"Torchvision version: {torchvision.__version__}")
+            except Exception as tv_error:
+                logger.warning(f"Torchvision version check failed: {tv_error}")
             
             # Test basic tensor operations
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
