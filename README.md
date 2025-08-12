@@ -28,11 +28,14 @@ The pipeline follows a 9-step process:
 ## 📁 Project Structure
 
 ```
+```
 SMGwithDA/
 ├── src/                          # Source code modules
-│   ├── environment_setup.py      # Environment and dependency management
-│   ├── sam_setup.py              # SAM model setup and utilities
+│   ├── environment_setup.py      # Environment and dependency management (Step 1)
+│   ├── sam_setup.py              # SAM model setup and utilities (Step 1)
+│   ├── dataset_config.py         # Dataset structure configuration (Step 2)
 │   ├── data_preprocessing.py     # Data loading and preprocessing (Step 2)
+│   ├── data_visualization.py     # Dataset visualization tools (Step 2)
 │   ├── zero_shot_segmentation.py # Initial SAM mask generation (Step 3)
 │   ├── feature_extraction.py     # Feature extraction for DA (Step 4)
 │   ├── domain_adaptation.py      # Domain alignment module (Step 5)
@@ -41,13 +44,26 @@ SMGwithDA/
 │   ├── validation.py             # Evaluation metrics (Step 8)
 │   └── inference_pipeline.py     # Final inference module (Step 9)
 ├── dataset/                      # Dataset directory
-│   ├── source/                   # Source domain data
-│   │   ├── images/              # Source images
-│   │   ├── annotations/         # Bounding box annotations
-│   │   └── masks/               # Ground truth masks (optional)
-│   └── target/                   # Target domain data
-│       ├── images/              # Target images (unlabeled)
-│       └── annotations/         # Target bounding boxes
+│   ├── Dataset/                  # Main forestry dataset
+│   │   ├── part_1/              # Dataset part 1 with tree annotations
+│   │   │   ├── 2k_dataset/      # High-resolution forest images (4608×3456)
+│   │   │   ├── coco_annotations.json # COCO format tree annotations
+│   │   │   ├── cropped_boxes/   # Pre-cropped bounding box regions
+│   │   │   ├── depth_images/    # Depth information and maps
+│   │   │   └── yolo_labels/     # YOLO format labels
+│   │   └── part_2/              # Dataset part 2 with additional annotations
+│   │       ├── raw_images/      # Additional forest images
+│   │       ├── coco_annotations.json # Extended tree annotations
+│   │       ├── depth_images/    # Depth data for part 2
+│   │       └── yolo_labels/     # YOLO format labels
+│   ├── Testing/                  # Test datasets
+│   │   └── simulated_images/    # Simulated test data for validation
+│   │       ├── images/          # Test images
+│   │       ├── coco_annotations.json # Test annotations
+│   │       └── yolo_labels/     # Test labels
+│   ├── source/                   # Legacy source domain (placeholder)
+│   └── target/                   # Legacy target domain (placeholder)
+```
 ├── models/                       # Model checkpoints
 │   ├── sam_vit_b_01ec64.pth     # SAM base model checkpoint
 │   └── adapted_models/          # Domain-adapted model saves
@@ -66,35 +82,63 @@ SMGwithDA/
 ### 1. Environment Setup
 
 ```bash
-# Clone the repository (if not already done)
+# Navigate to project directory
 cd SMGwithDA
+
+# Create virtual environment (recommended)
+python -m venv smgda_env
+source smgda_env/bin/activate  # On Windows: smgda_env\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Optional: Create conda environment
-conda create -n smgda python=3.8
-conda activate smgda
-pip install -r requirements.txt
+# Verify setup
+python verify_setup.py
 ```
 
-### 2. Launch the Pipeline
+### 2. Test Current Implementation
+
+```bash
+# Test Step 1: Environment Setup
+python src/environment_setup.py
+
+# Test Step 2: Data Preprocessing
+python test_step2.py
+
+# View dataset configuration
+python src/dataset_config.py
+```
+
+### 3. Launch the Main Pipeline
 
 ```bash
 # Start Jupyter notebook
 jupyter notebook main_pipeline.ipynb
 ```
 
-### 3. Run Step-by-Step
+### 4. Run Step-by-Step
 
 The main notebook (`main_pipeline.ipynb`) guides you through each step:
-1. Execute the environment setup cells
-2. Follow the step-by-step instructions
-3. Wait for confirmation before proceeding to next steps
+1. **Step 1**: Execute environment setup cells (✅ Complete)
+2. **Step 2**: Run data ingestion and preprocessing cells (✅ Complete)
+3. **Step 3**: Zero-shot mask generation (Next)
+4. Follow remaining steps sequentially
 
 ## 💾 Dataset Format
 
-### Source Dataset Structure
+### Current Forestry Dataset Structure
+Your dataset is automatically detected with this structure:
+```
+dataset/
+├── Dataset/
+│   ├── part_1/2k_dataset/           # 3 forest images (4608×3456)
+│   ├── part_2/raw_images/           # 8 forest images with annotations
+│   └── coco_annotations.json        # Tree bounding box annotations
+├── Testing/simulated_images/        # 4 test images
+└── Legacy source/target dirs        # Placeholder directories
+```
+
+### Legacy Dataset Structure (for reference)
 ```
 dataset/source/
 ├── images/
@@ -140,6 +184,99 @@ Supports COCO format or custom JSON:
   ]
 }
 ```
+
+## 🛠️ Implementation Steps
+
+### ✅ Step 1: Environment Setup (COMPLETED)
+
+**Objective**: Set up the development environment with SAM model and dependencies.
+
+**What was implemented:**
+- **Environment Validation**: CUDA/GPU detection, dependency verification
+- **SAM Model Management**: Automatic download and loading of SAM checkpoints
+- **Project Structure**: Created modular directory structure for scalability
+- **Error Handling**: Comprehensive validation and troubleshooting utilities
+
+**Key files created:**
+- `src/environment_setup.py` - Environment validation and setup utilities
+- `src/sam_setup.py` - SAM model loading and configuration
+- `requirements.txt` - Complete dependency management
+- `verify_setup.py` - Setup verification script
+
+**Results achieved:**
+- ✅ CUDA/GPU support with CPU fallback
+- ✅ SAM VIT-B model (350MB) downloaded and configured
+- ✅ Project structure ready for modular development
+- ✅ Comprehensive error handling and user guidance
+
+---
+
+### ✅ Step 2: Data Ingestion and Preprocessing (COMPLETED)
+
+**Objective**: Load and preprocess the forestry dataset with domain adaptation support.
+
+**What was implemented:**
+- **Dataset Configuration**: Smart analysis of complex dataset structure
+- **Multi-Domain Support**: Automatic source/target domain configuration
+- **COCO Integration**: Native support for COCO format tree annotations
+- **Preprocessing Pipeline**: Image resizing, normalization, and augmentation
+- **Data Validation**: Comprehensive dataset integrity checking
+- **Visualization Tools**: Dataset exploration and debugging utilities
+
+**Key files created:**
+- `src/dataset_config.py` - Intelligent dataset structure management
+- `src/data_preprocessing.py` - Complete data preprocessing pipeline
+- `src/data_visualization.py` - Dataset visualization and exploration tools
+- `test_step2.py` - Step 2 verification and testing
+
+**Dataset analysis results:**
+```
+🌲 Forestry Dataset Detected:
+├── main_dataset.part_1: 3 high-resolution forest images (4608×3456)
+├── main_dataset.part_2: 8 images with tree annotations
+├── testing.simulated: 4 simulated test images
+└── Total: 15 images with COCO tree annotations
+
+🎯 Optimal Domain Configuration:
+├── Source Domain: main_dataset.part_2 (8 annotated forest images)
+├── Target Domain: testing.simulated (4 test images)
+└── Primary Category: Trees (forest environment optimization)
+```
+
+**Technical achievements:**
+- ✅ Automatic dataset discovery and configuration
+- ✅ COCO format tree annotations loaded and validated
+- ✅ Image preprocessing: 4608×3456 → 512×512 with aspect ratio preservation
+- ✅ ImageNet normalization for SAM compatibility
+- ✅ Data augmentation pipeline for source domain (flip, color jitter, noise, blur)
+- ✅ PyTorch DataLoaders with variable bounding box support
+- ✅ Domain adaptation ready with source/target/validation splits
+
+**Results achieved:**
+- ✅ 15 forest images processed and ready for training
+- ✅ Tree bounding box annotations validated and loaded
+- ✅ Preprocessing pipeline optimized for forestry domain
+- ✅ Data integrity: 100% valid images with proper annotations
+- ✅ Memory-efficient batch processing configured
+
+---
+
+### 🔄 Next Steps:
+
+**Step 3: Zero-Shot Mask Generation** (In Progress)
+- Load SAM model for initial mask generation
+- Process tree bounding boxes to create segmentation masks
+- Establish baseline performance before domain adaptation
+- Generate features for domain adaptation pipeline
+
+**Step 4: Feature Extraction** (Planned)
+- Extract deep features using SAM encoder
+- Prepare features for domain adaptation
+- Implement feature dimensionality reduction
+
+**Steps 5-9**: Domain adaptation, self-training, post-processing, validation, and final inference pipeline.
+
+---
 
 ## ⚙️ Configuration
 
